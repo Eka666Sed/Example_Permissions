@@ -5,28 +5,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.yandexpracticum.example_permissions.databinding.FragmentPermissionBinding
 import android.Manifest
-
+import android.content.Context
+import com.tbruyelle.rxpermissions3.RxPermissions
 
 class PermissionFragment : Fragment() {
     private var binding: FragmentPermissionBinding? = null
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // Пользователь дал разрешение, можно продолжать работу
-                binding?.permissionRequestFrame?.visibility = View.GONE
-                binding?.permissionGranted?.visibility = View.VISIBLE
-            } else {
-                // Пользователь отказал в предоставлении разрешения
-                binding?.permissionRequestFrame?.visibility = View.VISIBLE
-                binding?.permissionGranted?.visibility = View.GONE
-            }
-        }
+    private lateinit var rxPermissions: RxPermissions
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        rxPermissions = RxPermissions(requireActivity())
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,7 +38,19 @@ class PermissionFragment : Fragment() {
         checkPermission()
 
         binding?.permissionRequestFrame?.setOnClickListener {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+            rxPermissions
+                .request(Manifest.permission.CAMERA)
+                .subscribe { granted: Boolean ->
+                    if (granted) {
+                        // Пользователь дал разрешение, можно продолжать работу
+                        binding?.permissionRequestFrame?.visibility = View.GONE
+                        binding?.permissionGranted?.visibility = View.VISIBLE
+                    } else {
+                        // Пользователь отказал в предоставлении разрешения
+                        binding?.permissionRequestFrame?.visibility = View.VISIBLE
+                        binding?.permissionGranted?.visibility = View.GONE
+                    }
+                }
         }
     }
 

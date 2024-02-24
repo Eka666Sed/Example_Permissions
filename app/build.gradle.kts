@@ -51,4 +51,9 @@ dependencies {
     implementation ("androidx.activity:activity:1.6.2")
     implementation ("androidx.activity:activity-ktx:1.6.2")
 
+    implementation ("io.reactivex.rxjava3:rxjava:3.1.0")
+    implementation ("io.reactivex.rxjava3:rxandroid:3.0.0")
+    implementation ("com.github.tbruyelle:rxpermissions:0.12")
+
+
 }
